@@ -4,60 +4,69 @@
 import os.path
 import re
 import math
+import sys
 
 class FeatureGenerator:
     def __init__(self):
+        # Training Data
+        self.numberOfCategories = 7
+        self.numberOfSolvers = 7
         self.trainingPath = os.path.join('..', 'Competition', 'benchmarks')
-        self.wordReferences = dict()
-        self.numberOfCategores = 7 # just a guess
         self.trainingData = os.path.join('..', 'Competition', 'SyGuS-COMP15-results.csv')
-        self.benchmarksData = self.getBenchmarks()
-        self.totalNumberOfWords = [0.0]*self.numberOfCategores
-        self.features = self.mineData()
+        self.benchmarksData = self._getBenchmarks()
 
-    def getBenchmarks(self):
-        trueOutputs = open(self.trainingData, 'rb')
-        trueOutputs.readline()
-
-        benchmarkIndex = 0
-        # Now we want to make a dictionary that stores entries associated with the
-        # benchmark as the key
-        benchmarks = dict()
-        for entry in trueOutputs:
-            entry = entry.split(',')
-            entry = Entry(entry)
-            benchmarks[entry.benchmark] = benchmarkArray = benchmarks.get(entry.benchmark,[])
-            benchmarkArray.append(entry)
-        return benchmarks
-
-    def testLayer1InitialValues(self):
+        # Sets up initial structure for Layer 1
+        # Note that there is 1 bias per category. Hence, we have that number of biases
+        self.layer1Biases = [0.0]*self.numberOfCategories
+        # Note that there is one feature weight per feature per category. Hence we have
+        # features*categories weights
+        self.layer1Features = dict()
+        # This just populates the above two listed features
+        self.populateLayer1InitialValues()
+        
+        # Sets up initial structure for Layer 2
+        self.layer2Biases = [0]*self.numberOfSolvers
+        self.layer2FeatureWeights = dict()
+        #self.layer2FeatureWeights = [[0]*self.numberOfSolvers]*self.numberOfCategories
+        self.populateLayer2InitialValues()
+        
+    def populateLayer2InitialValues(self):
         folderIndex = 0
-        totalRuns = 0.0
-        correct = 0.0
-        avgCorrect = 0.0
+        benchmarksEvaluated = 0
         for folder, subs, files in os.walk(self.trainingPath):
             if folder == self.trainingPath:
                 continue
             for fileName in files:
                 if fileName.endswith(".sl"):
-                    program = open(os.path.join(folder, fileName), 'rb')
-                    zValues = self.classify(program)
-                    isCorrect = (zValues.index(max(zValues)) == folderIndex)
-                    correct += isCorrect
-                    if isCorrect:
-                        avgCorrect += max(zValues)
-                    print(str(max(zValues))+" "+str(zValues.index(max(zValues)) == folderIndex)
-)
-                    totalRuns += 1
+                    if(fileName not in self.benchmarksData):
+                        continue;
+                    benchmarkData = self.benchmarksData[fileName]
+                    minTimeToCompletion = sys.maxint
+                    for entry in benchmarkData:
+                        if(entry.result == "correct") and entry.wallClockTime < minTimeToCompletion:
+                            minTimeToCompletion = entry.wallClockTime
+                    # If somebody solved it, we need to adjust our feature weights
+                    if(minTimeToCompletion != sys.maxint):
+                        benchmarksEvaluated += 1
+                        for entry in benchmarkData:
+                            featureWeights = self.layer2FeatureWeights.get(entry.solver, [0.0]*self.numberOfCategories)
+                            if(entry.result == "correct"):
+                                featureWeights[folderIndex] += minTimeToCompletion/entry.wallClockTime
+                            self.layer2FeatureWeights[entry.solver] = featureWeights
             folderIndex += 1
-        print(correct/totalRuns)
-        print(avgCorrect/correct)
-         
-    def classifyLayer2(self, z):
+        for key in self.layer2FeatureWeights:
+            print(str(key)+" "+str(self.layer2FeatureWeights[key]))
+
+    def getLayer2Output(self, program):
+        features = self.getLayer1Output(program)
         
 
+    def getLayer1Output(self, program):
+        z = self.layer1z(program)
+        return self._sigmoid(z)
+
     # wordReferences is our initial feature weight
-    def classify(self, program):
+    def layer1z(self, program):
         progDict = dict()
         wordCount = 0
         for line in program:
@@ -72,18 +81,19 @@ class FeatureGenerator:
                 progDict[word] = progDict.get(word, 1.0)
                 wordCount += 1
         # Now we calculate the Z values of layer 1:
-        z = [0]*self.numberOfCategores
+        z = [0]*self.numberOfCategories
         for key in progDict:
-            uses = self.wordReferences[key]
-            for i in range(self.numberOfCategores):
+            uses = self.layer1Features[key]
+            for i in range(self.numberOfCategories):
                 z[i] += uses[i]*progDict[key]/wordCount
-        return sigmoid(z)
+        return z
 
-    def sigmoid(self, z, bias):
-        return [1/(1+math.exp(bias - zval)) for zval in z]
-    
     # This mines the data in a training path and categorizes it into features.
-    def mineData(self):
+    # It populates the biases. There should be 1 bias per neuron.
+    # It populates the weights. There sould be 1 weight per feature per neuron.
+    # biases = self.layer1Biases
+    # features = self.layer1Features
+    def populateLayer1InitialValues(self):
         categoryIndex = 0
         for folder, subs, files in os.walk(self.trainingPath):
             if folder == self.trainingPath:
@@ -91,15 +101,46 @@ class FeatureGenerator:
             for fileName in files:
                 if fileName.endswith(".sl"):
                     program = open(os.path.join(folder, fileName), 'rb')
-                    self.mineProgram(program, categoryIndex)
+                    self.populateLayer1Features(program, categoryIndex)
             categoryIndex += 1
-        features = []
-        for key in self.wordReferences:
-            totalRefs = sum(self.wordReferences[key])
-            self.wordReferences[key] = [WR/totalRefs for WR in self.wordReferences[key]]
-            features.append((totalRefs, self.wordReferences[key]))
-        return features
+        for key in self.layer1Features:
+            totalRefs = sum(self.layer1Features[key])
+            self.layer1Features[key] = [WR/totalRefs for WR in self.layer1Features[key]]
+        self.layer1Biases = [self.getLayer1Biases()]*self.numberOfCategories
 
+    # This function gets the biases of the features
+    def getLayer1Biases(self):
+        folderIndex = 0
+        totalRuns = 0.0
+        correct = 0.0
+        avgCorrect = 0.0
+        correctPerCategory = [0.0]*self.numberOfCategories
+        totalPerCategory = [0.0]*self.numberOfCategories
+        for folder, subs, files in os.walk(self.trainingPath):
+            if folder == self.trainingPath:
+                continue
+            for fileName in files:
+                if fileName.endswith(".sl"):
+                    program = open(os.path.join(folder, fileName), 'rb')
+                    zValues = self.layer1z(program)
+                    isCorrect = (zValues.index(max(zValues)) == folderIndex)
+                    correct += isCorrect
+                    totalPerCategory[folderIndex] += 1
+                    if isCorrect:
+                        avgCorrect += max(zValues)
+                        correctPerCategory[folderIndex] += 1
+#                    print(zValues)
+#                    print(str(max(zValues))+" "+str(zValues.index(max(zValues)) == folderIndex)
+
+                    totalRuns += 1
+            folderIndex += 1
+#        print(correct/totalRuns)
+#        print(avgCorrect/correct)
+#        print("Correctness per category")
+#        print([c/t for c, t in zip(correctPerCategory, totalPerCategory)])
+        # This gives us our bias:
+        return avgCorrect/correct
+         
     # Given a file handle, this pulls out relevant data points
     # It skips commented lines (starting with ;)
     # It removes the parentheses
@@ -107,7 +148,7 @@ class FeatureGenerator:
     # Then it goes through each word and increments the apporpriate dictionary
     # entry.
     # for space efficiency, it also categorizes memory accesses as the same word
-    def mineProgram(self, program, categoryIndex):
+    def populateLayer1Features(self, program, categoryIndex):
         for line in program:
             if(line[0] == ';'):
                 continue
@@ -117,10 +158,27 @@ class FeatureGenerator:
             for word in line:
                 if(word[0]=='#'):
                     word = "#x-----"
-                self.wordReferences[word] = refArray = \
-                        self.wordReferences.get(word, [0.0]*self.numberOfCategores)
+                self.layer1Features[word] = refArray = \
+                        self.layer1Features.get(word, [0.0]*self.numberOfCategories)
                 refArray[categoryIndex] += 1
-                self.totalNumberOfWords[categoryIndex] += 1
+
+    # Gets the benchmarks and stores them in a dictionary
+    def _getBenchmarks(self):
+        trueOutputs = open(self.trainingData, 'rb')
+        trueOutputs.readline()
+
+        benchmarkIndex = 0
+        # Now we want to make a dictionary that stores entries associated with the
+        # benchmark as the key
+        benchmarks = dict()
+        for entry in trueOutputs:
+            entry = entry.split(',')
+            entry = Entry(entry)
+            benchmarks[entry.benchmark] = benchmarkArray = benchmarks.get(entry.benchmark,[])
+            benchmarkArray.append(entry)
+        return benchmarks
+
+
 
     def _computeVariance(self, data):
         mean = sum(data)/len(data)
@@ -128,13 +186,18 @@ class FeatureGenerator:
             errorSquared = (dataPoint-mean)*(dataPoint-mean)
         return dataPoint/len(data)
 
+    def _sigmoid(self, z, biases):
+        return [1/(1+math.exp(bias - zval)) for bias, zval in zip(biases, z)]
+    
+
+
 class Entry:
     def __init__(self, line):
         self.benchmark = line[0].split('/')[-1]
         self.solver = line[1]
         self.status = line[2]
         self.cpuTime = line[3]
-        self.wallClockTime = line[4]
+        self.wallClockTime = float(line[4])
         self.memoryUsage = line[5]
         self.result = line[6]
         self.exprsDetails = line[7]
@@ -142,4 +205,3 @@ class Entry:
 
 
 f = FeatureGenerator()
-f.testLayer1InitialValues() 
