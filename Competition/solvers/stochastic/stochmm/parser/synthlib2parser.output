@@ -1,0 +1,1347 @@
+Terminals unused in grammar
+
+   TK_ERROR
+
+
+Grammar
+
+    0 $accept: start $end
+
+    1 start: Prog
+    2      | %empty
+
+    3 Prog: SetLogicCmd CmdPlus
+    4     | CmdPlus
+
+    5 Symbol: TK_SYMBOL
+
+    6 SetLogicCmd: TK_LPAREN TK_SET_LOGIC Symbol TK_RPAREN
+
+    7 CmdPlus: CmdPlus Cmd
+    8        | Cmd
+
+    9 Cmd: FunDefCmd
+   10    | SynthFunCmd
+   11    | CheckSynthCmd
+   12    | ConstraintCmd
+   13    | SortDefCmd
+   14    | SetOptsCmd
+   15    | VarDeclCmd
+
+   16 VarDeclCmd: TK_LPAREN TK_DECLARE_VAR Symbol SortExpr TK_RPAREN
+
+   17 SortDefCmd: TK_LPAREN TK_DEFINE_SORT Symbol SortExpr TK_RPAREN
+
+   18 SortExpr: TK_LPAREN TK_BV IntConst TK_RPAREN
+   19         | TK_INT
+   20         | TK_BOOL
+   21         | TK_LPAREN TK_ENUM ECList TK_RPAREN
+   22         | Symbol
+
+   23 IntConst: TK_INT_LITERAL
+
+   24 BoolConst: TK_BOOL_LITERAL
+
+   25 BVConst: TK_BV_LITERAL
+
+   26 EnumConst: TK_ENUM_LITERAL
+
+   27 ECList: TK_LPAREN SymbolPlus TK_RPAREN
+
+   28 SymbolPlus: SymbolPlus Symbol
+   29           | Symbol
+
+   30 SetOptsCmd: TK_LPAREN TK_SET_OPTIONS OptList TK_RPAREN
+
+   31 OptList: TK_LPAREN SymbolPairPlus TK_RPAREN
+
+   32 SymbolPairPlus: SymbolPairPlus SymbolPair
+   33               | SymbolPair
+
+   34 SymbolPair: TK_LPAREN Symbol TK_QUOTED_LITERAL TK_RPAREN
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol ArgList SortExpr Term TK_RPAREN
+
+   36 ArgList: TK_LPAREN SymbolSortPairStar TK_RPAREN
+
+   37 SymbolSortPairStar: SymbolSortPairStar SymbolSortPair
+   38                   | %empty
+
+   39 SymbolSortPair: TK_LPAREN Symbol SortExpr TK_RPAREN
+
+   40 Term: TK_LPAREN Symbol TermStar TK_RPAREN
+   41     | Literal
+   42     | Symbol
+
+   43 TermStar: TermStar Term
+   44         | %empty
+
+   45 Literal: IntConst
+   46        | BoolConst
+   47        | BVConst
+   48        | EnumConst
+
+   49 NTDefPlus: NTDefPlus NTDef
+   50          | NTDef
+
+   51 NTDef: TK_LPAREN Symbol SortExpr TK_LPAREN GTermPlus TK_RPAREN TK_RPAREN
+
+   52 GTermPlus: GTermPlus GTerm
+   53          | GTerm
+
+   54 CheckSynthCmd: TK_LPAREN TK_CHECK_SYNTH TK_RPAREN
+
+   55 ConstraintCmd: TK_LPAREN TK_CONSTRAINT Term TK_RPAREN
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+   57 GTerm: Symbol
+   58      | Literal
+   59      | TK_LPAREN Symbol GTermStar TK_RPAREN
+   60      | TK_LPAREN TK_CONSTANT SortExpr TK_RPAREN
+   61      | TK_LPAREN TK_VARIABLE SortExpr TK_RPAREN
+
+   62 GTermStar: GTermStar GTerm
+   63          | %empty
+
+
+Terminals, with rules where they appear
+
+$end (0) 0
+error (256)
+TK_DEFINE_SORT (258) 17
+TK_DEFINE_FUN (259) 35
+TK_SET_OPTIONS (260) 30
+TK_CHECK_SYNTH (261) 54
+TK_SYNTH_FUN (262) 56
+TK_DECLARE_VAR (263) 16
+TK_LPAREN (264) 6 16 17 18 21 27 30 31 34 35 36 39 40 51 54 55 56 59
+    60 61
+TK_RPAREN (265) 6 16 17 18 21 27 30 31 34 35 36 39 40 51 54 55 56 59
+    60 61
+TK_SET_LOGIC (266) 6
+TK_BV (267) 18
+TK_INT (268) 19
+TK_BOOL (269) 20
+TK_ENUM (270) 21
+TK_CONSTRAINT (271) 55
+TK_CONSTANT (272) 60
+TK_VARIABLE (273) 61
+TK_ERROR (274)
+TK_INT_LITERAL (275) 23
+TK_BOOL_LITERAL (276) 24
+TK_ENUM_LITERAL (277) 26
+TK_BV_LITERAL (278) 25
+TK_SYMBOL (279) 5
+TK_QUOTED_LITERAL (280) 34
+
+
+Nonterminals, with rules where they appear
+
+$accept (26)
+    on left: 0
+start (27)
+    on left: 1 2, on right: 0
+Prog (28)
+    on left: 3 4, on right: 1
+Symbol (29)
+    on left: 5, on right: 6 16 17 22 28 29 34 35 39 40 42 51 56 57
+    59
+SetLogicCmd (30)
+    on left: 6, on right: 3
+CmdPlus (31)
+    on left: 7 8, on right: 3 4 7
+Cmd (32)
+    on left: 9 10 11 12 13 14 15, on right: 7 8
+VarDeclCmd (33)
+    on left: 16, on right: 15
+SortDefCmd (34)
+    on left: 17, on right: 13
+SortExpr (35)
+    on left: 18 19 20 21 22, on right: 16 17 35 39 51 56 60 61
+IntConst (36)
+    on left: 23, on right: 18 45
+BoolConst (37)
+    on left: 24, on right: 46
+BVConst (38)
+    on left: 25, on right: 47
+EnumConst (39)
+    on left: 26, on right: 48
+ECList (40)
+    on left: 27, on right: 21
+SymbolPlus (41)
+    on left: 28 29, on right: 27 28
+SetOptsCmd (42)
+    on left: 30, on right: 14
+OptList (43)
+    on left: 31, on right: 30
+SymbolPairPlus (44)
+    on left: 32 33, on right: 31 32
+SymbolPair (45)
+    on left: 34, on right: 32 33
+FunDefCmd (46)
+    on left: 35, on right: 9
+ArgList (47)
+    on left: 36, on right: 35 56
+SymbolSortPairStar (48)
+    on left: 37 38, on right: 36 37
+SymbolSortPair (49)
+    on left: 39, on right: 37
+Term (50)
+    on left: 40 41 42, on right: 35 43 55
+TermStar (51)
+    on left: 43 44, on right: 40 43
+Literal (52)
+    on left: 45 46 47 48, on right: 41 58
+NTDefPlus (53)
+    on left: 49 50, on right: 49 56
+NTDef (54)
+    on left: 51, on right: 49 50
+GTermPlus (55)
+    on left: 52 53, on right: 51 52
+CheckSynthCmd (56)
+    on left: 54, on right: 11
+ConstraintCmd (57)
+    on left: 55, on right: 12
+SynthFunCmd (58)
+    on left: 56, on right: 10
+GTerm (59)
+    on left: 57 58 59 60 61, on right: 52 53 62
+GTermStar (60)
+    on left: 62 63, on right: 59 62
+
+
+State 0
+
+    0 $accept: . start $end
+
+    TK_LPAREN  shift, and go to state 1
+
+    $default  reduce using rule 2 (start)
+
+    start          go to state 2
+    Prog           go to state 3
+    SetLogicCmd    go to state 4
+    CmdPlus        go to state 5
+    Cmd            go to state 6
+    VarDeclCmd     go to state 7
+    SortDefCmd     go to state 8
+    SetOptsCmd     go to state 9
+    FunDefCmd      go to state 10
+    CheckSynthCmd  go to state 11
+    ConstraintCmd  go to state 12
+    SynthFunCmd    go to state 13
+
+
+State 1
+
+    6 SetLogicCmd: TK_LPAREN . TK_SET_LOGIC Symbol TK_RPAREN
+   16 VarDeclCmd: TK_LPAREN . TK_DECLARE_VAR Symbol SortExpr TK_RPAREN
+   17 SortDefCmd: TK_LPAREN . TK_DEFINE_SORT Symbol SortExpr TK_RPAREN
+   30 SetOptsCmd: TK_LPAREN . TK_SET_OPTIONS OptList TK_RPAREN
+   35 FunDefCmd: TK_LPAREN . TK_DEFINE_FUN Symbol ArgList SortExpr Term TK_RPAREN
+   54 CheckSynthCmd: TK_LPAREN . TK_CHECK_SYNTH TK_RPAREN
+   55 ConstraintCmd: TK_LPAREN . TK_CONSTRAINT Term TK_RPAREN
+   56 SynthFunCmd: TK_LPAREN . TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_DEFINE_SORT  shift, and go to state 14
+    TK_DEFINE_FUN   shift, and go to state 15
+    TK_SET_OPTIONS  shift, and go to state 16
+    TK_CHECK_SYNTH  shift, and go to state 17
+    TK_SYNTH_FUN    shift, and go to state 18
+    TK_DECLARE_VAR  shift, and go to state 19
+    TK_SET_LOGIC    shift, and go to state 20
+    TK_CONSTRAINT   shift, and go to state 21
+
+
+State 2
+
+    0 $accept: start . $end
+
+    $end  shift, and go to state 22
+
+
+State 3
+
+    1 start: Prog .
+
+    $default  reduce using rule 1 (start)
+
+
+State 4
+
+    3 Prog: SetLogicCmd . CmdPlus
+
+    TK_LPAREN  shift, and go to state 23
+
+    CmdPlus        go to state 24
+    Cmd            go to state 6
+    VarDeclCmd     go to state 7
+    SortDefCmd     go to state 8
+    SetOptsCmd     go to state 9
+    FunDefCmd      go to state 10
+    CheckSynthCmd  go to state 11
+    ConstraintCmd  go to state 12
+    SynthFunCmd    go to state 13
+
+
+State 5
+
+    4 Prog: CmdPlus .
+    7 CmdPlus: CmdPlus . Cmd
+
+    TK_LPAREN  shift, and go to state 23
+
+    $default  reduce using rule 4 (Prog)
+
+    Cmd            go to state 25
+    VarDeclCmd     go to state 7
+    SortDefCmd     go to state 8
+    SetOptsCmd     go to state 9
+    FunDefCmd      go to state 10
+    CheckSynthCmd  go to state 11
+    ConstraintCmd  go to state 12
+    SynthFunCmd    go to state 13
+
+
+State 6
+
+    8 CmdPlus: Cmd .
+
+    $default  reduce using rule 8 (CmdPlus)
+
+
+State 7
+
+   15 Cmd: VarDeclCmd .
+
+    $default  reduce using rule 15 (Cmd)
+
+
+State 8
+
+   13 Cmd: SortDefCmd .
+
+    $default  reduce using rule 13 (Cmd)
+
+
+State 9
+
+   14 Cmd: SetOptsCmd .
+
+    $default  reduce using rule 14 (Cmd)
+
+
+State 10
+
+    9 Cmd: FunDefCmd .
+
+    $default  reduce using rule 9 (Cmd)
+
+
+State 11
+
+   11 Cmd: CheckSynthCmd .
+
+    $default  reduce using rule 11 (Cmd)
+
+
+State 12
+
+   12 Cmd: ConstraintCmd .
+
+    $default  reduce using rule 12 (Cmd)
+
+
+State 13
+
+   10 Cmd: SynthFunCmd .
+
+    $default  reduce using rule 10 (Cmd)
+
+
+State 14
+
+   17 SortDefCmd: TK_LPAREN TK_DEFINE_SORT . Symbol SortExpr TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 27
+
+
+State 15
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN . Symbol ArgList SortExpr Term TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 28
+
+
+State 16
+
+   30 SetOptsCmd: TK_LPAREN TK_SET_OPTIONS . OptList TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 29
+
+    OptList  go to state 30
+
+
+State 17
+
+   54 CheckSynthCmd: TK_LPAREN TK_CHECK_SYNTH . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 31
+
+
+State 18
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN . Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 32
+
+
+State 19
+
+   16 VarDeclCmd: TK_LPAREN TK_DECLARE_VAR . Symbol SortExpr TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 33
+
+
+State 20
+
+    6 SetLogicCmd: TK_LPAREN TK_SET_LOGIC . Symbol TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 34
+
+
+State 21
+
+   55 ConstraintCmd: TK_LPAREN TK_CONSTRAINT . Term TK_RPAREN
+
+    TK_LPAREN        shift, and go to state 35
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 40
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Term       go to state 45
+    Literal    go to state 46
+
+
+State 22
+
+    0 $accept: start $end .
+
+    $default  accept
+
+
+State 23
+
+   16 VarDeclCmd: TK_LPAREN . TK_DECLARE_VAR Symbol SortExpr TK_RPAREN
+   17 SortDefCmd: TK_LPAREN . TK_DEFINE_SORT Symbol SortExpr TK_RPAREN
+   30 SetOptsCmd: TK_LPAREN . TK_SET_OPTIONS OptList TK_RPAREN
+   35 FunDefCmd: TK_LPAREN . TK_DEFINE_FUN Symbol ArgList SortExpr Term TK_RPAREN
+   54 CheckSynthCmd: TK_LPAREN . TK_CHECK_SYNTH TK_RPAREN
+   55 ConstraintCmd: TK_LPAREN . TK_CONSTRAINT Term TK_RPAREN
+   56 SynthFunCmd: TK_LPAREN . TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_DEFINE_SORT  shift, and go to state 14
+    TK_DEFINE_FUN   shift, and go to state 15
+    TK_SET_OPTIONS  shift, and go to state 16
+    TK_CHECK_SYNTH  shift, and go to state 17
+    TK_SYNTH_FUN    shift, and go to state 18
+    TK_DECLARE_VAR  shift, and go to state 19
+    TK_CONSTRAINT   shift, and go to state 21
+
+
+State 24
+
+    3 Prog: SetLogicCmd CmdPlus .
+    7 CmdPlus: CmdPlus . Cmd
+
+    TK_LPAREN  shift, and go to state 23
+
+    $default  reduce using rule 3 (Prog)
+
+    Cmd            go to state 25
+    VarDeclCmd     go to state 7
+    SortDefCmd     go to state 8
+    SetOptsCmd     go to state 9
+    FunDefCmd      go to state 10
+    CheckSynthCmd  go to state 11
+    ConstraintCmd  go to state 12
+    SynthFunCmd    go to state 13
+
+
+State 25
+
+    7 CmdPlus: CmdPlus Cmd .
+
+    $default  reduce using rule 7 (CmdPlus)
+
+
+State 26
+
+    5 Symbol: TK_SYMBOL .
+
+    $default  reduce using rule 5 (Symbol)
+
+
+State 27
+
+   17 SortDefCmd: TK_LPAREN TK_DEFINE_SORT Symbol . SortExpr TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 51
+
+
+State 28
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol . ArgList SortExpr Term TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 52
+
+    ArgList  go to state 53
+
+
+State 29
+
+   31 OptList: TK_LPAREN . SymbolPairPlus TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 54
+
+    SymbolPairPlus  go to state 55
+    SymbolPair      go to state 56
+
+
+State 30
+
+   30 SetOptsCmd: TK_LPAREN TK_SET_OPTIONS OptList . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 57
+
+
+State 31
+
+   54 CheckSynthCmd: TK_LPAREN TK_CHECK_SYNTH TK_RPAREN .
+
+    $default  reduce using rule 54 (CheckSynthCmd)
+
+
+State 32
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol . ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 52
+
+    ArgList  go to state 58
+
+
+State 33
+
+   16 VarDeclCmd: TK_LPAREN TK_DECLARE_VAR Symbol . SortExpr TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 59
+
+
+State 34
+
+    6 SetLogicCmd: TK_LPAREN TK_SET_LOGIC Symbol . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 60
+
+
+State 35
+
+   40 Term: TK_LPAREN . Symbol TermStar TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 61
+
+
+State 36
+
+   23 IntConst: TK_INT_LITERAL .
+
+    $default  reduce using rule 23 (IntConst)
+
+
+State 37
+
+   24 BoolConst: TK_BOOL_LITERAL .
+
+    $default  reduce using rule 24 (BoolConst)
+
+
+State 38
+
+   26 EnumConst: TK_ENUM_LITERAL .
+
+    $default  reduce using rule 26 (EnumConst)
+
+
+State 39
+
+   25 BVConst: TK_BV_LITERAL .
+
+    $default  reduce using rule 25 (BVConst)
+
+
+State 40
+
+   42 Term: Symbol .
+
+    $default  reduce using rule 42 (Term)
+
+
+State 41
+
+   45 Literal: IntConst .
+
+    $default  reduce using rule 45 (Literal)
+
+
+State 42
+
+   46 Literal: BoolConst .
+
+    $default  reduce using rule 46 (Literal)
+
+
+State 43
+
+   47 Literal: BVConst .
+
+    $default  reduce using rule 47 (Literal)
+
+
+State 44
+
+   48 Literal: EnumConst .
+
+    $default  reduce using rule 48 (Literal)
+
+
+State 45
+
+   55 ConstraintCmd: TK_LPAREN TK_CONSTRAINT Term . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 62
+
+
+State 46
+
+   41 Term: Literal .
+
+    $default  reduce using rule 41 (Term)
+
+
+State 47
+
+   18 SortExpr: TK_LPAREN . TK_BV IntConst TK_RPAREN
+   21         | TK_LPAREN . TK_ENUM ECList TK_RPAREN
+
+    TK_BV    shift, and go to state 63
+    TK_ENUM  shift, and go to state 64
+
+
+State 48
+
+   19 SortExpr: TK_INT .
+
+    $default  reduce using rule 19 (SortExpr)
+
+
+State 49
+
+   20 SortExpr: TK_BOOL .
+
+    $default  reduce using rule 20 (SortExpr)
+
+
+State 50
+
+   22 SortExpr: Symbol .
+
+    $default  reduce using rule 22 (SortExpr)
+
+
+State 51
+
+   17 SortDefCmd: TK_LPAREN TK_DEFINE_SORT Symbol SortExpr . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 65
+
+
+State 52
+
+   36 ArgList: TK_LPAREN . SymbolSortPairStar TK_RPAREN
+
+    $default  reduce using rule 38 (SymbolSortPairStar)
+
+    SymbolSortPairStar  go to state 66
+
+
+State 53
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol ArgList . SortExpr Term TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 67
+
+
+State 54
+
+   34 SymbolPair: TK_LPAREN . Symbol TK_QUOTED_LITERAL TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 68
+
+
+State 55
+
+   31 OptList: TK_LPAREN SymbolPairPlus . TK_RPAREN
+   32 SymbolPairPlus: SymbolPairPlus . SymbolPair
+
+    TK_LPAREN  shift, and go to state 54
+    TK_RPAREN  shift, and go to state 69
+
+    SymbolPair  go to state 70
+
+
+State 56
+
+   33 SymbolPairPlus: SymbolPair .
+
+    $default  reduce using rule 33 (SymbolPairPlus)
+
+
+State 57
+
+   30 SetOptsCmd: TK_LPAREN TK_SET_OPTIONS OptList TK_RPAREN .
+
+    $default  reduce using rule 30 (SetOptsCmd)
+
+
+State 58
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList . SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 71
+
+
+State 59
+
+   16 VarDeclCmd: TK_LPAREN TK_DECLARE_VAR Symbol SortExpr . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 72
+
+
+State 60
+
+    6 SetLogicCmd: TK_LPAREN TK_SET_LOGIC Symbol TK_RPAREN .
+
+    $default  reduce using rule 6 (SetLogicCmd)
+
+
+State 61
+
+   40 Term: TK_LPAREN Symbol . TermStar TK_RPAREN
+
+    $default  reduce using rule 44 (TermStar)
+
+    TermStar  go to state 73
+
+
+State 62
+
+   55 ConstraintCmd: TK_LPAREN TK_CONSTRAINT Term TK_RPAREN .
+
+    $default  reduce using rule 55 (ConstraintCmd)
+
+
+State 63
+
+   18 SortExpr: TK_LPAREN TK_BV . IntConst TK_RPAREN
+
+    TK_INT_LITERAL  shift, and go to state 36
+
+    IntConst  go to state 74
+
+
+State 64
+
+   21 SortExpr: TK_LPAREN TK_ENUM . ECList TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 75
+
+    ECList  go to state 76
+
+
+State 65
+
+   17 SortDefCmd: TK_LPAREN TK_DEFINE_SORT Symbol SortExpr TK_RPAREN .
+
+    $default  reduce using rule 17 (SortDefCmd)
+
+
+State 66
+
+   36 ArgList: TK_LPAREN SymbolSortPairStar . TK_RPAREN
+   37 SymbolSortPairStar: SymbolSortPairStar . SymbolSortPair
+
+    TK_LPAREN  shift, and go to state 77
+    TK_RPAREN  shift, and go to state 78
+
+    SymbolSortPair  go to state 79
+
+
+State 67
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol ArgList SortExpr . Term TK_RPAREN
+
+    TK_LPAREN        shift, and go to state 35
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 40
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Term       go to state 80
+    Literal    go to state 46
+
+
+State 68
+
+   34 SymbolPair: TK_LPAREN Symbol . TK_QUOTED_LITERAL TK_RPAREN
+
+    TK_QUOTED_LITERAL  shift, and go to state 81
+
+
+State 69
+
+   31 OptList: TK_LPAREN SymbolPairPlus TK_RPAREN .
+
+    $default  reduce using rule 31 (OptList)
+
+
+State 70
+
+   32 SymbolPairPlus: SymbolPairPlus SymbolPair .
+
+    $default  reduce using rule 32 (SymbolPairPlus)
+
+
+State 71
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr . TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 82
+
+
+State 72
+
+   16 VarDeclCmd: TK_LPAREN TK_DECLARE_VAR Symbol SortExpr TK_RPAREN .
+
+    $default  reduce using rule 16 (VarDeclCmd)
+
+
+State 73
+
+   40 Term: TK_LPAREN Symbol TermStar . TK_RPAREN
+   43 TermStar: TermStar . Term
+
+    TK_LPAREN        shift, and go to state 35
+    TK_RPAREN        shift, and go to state 83
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 40
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Term       go to state 84
+    Literal    go to state 46
+
+
+State 74
+
+   18 SortExpr: TK_LPAREN TK_BV IntConst . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 85
+
+
+State 75
+
+   27 ECList: TK_LPAREN . SymbolPlus TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol      go to state 86
+    SymbolPlus  go to state 87
+
+
+State 76
+
+   21 SortExpr: TK_LPAREN TK_ENUM ECList . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 88
+
+
+State 77
+
+   39 SymbolSortPair: TK_LPAREN . Symbol SortExpr TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 89
+
+
+State 78
+
+   36 ArgList: TK_LPAREN SymbolSortPairStar TK_RPAREN .
+
+    $default  reduce using rule 36 (ArgList)
+
+
+State 79
+
+   37 SymbolSortPairStar: SymbolSortPairStar SymbolSortPair .
+
+    $default  reduce using rule 37 (SymbolSortPairStar)
+
+
+State 80
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol ArgList SortExpr Term . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 90
+
+
+State 81
+
+   34 SymbolPair: TK_LPAREN Symbol TK_QUOTED_LITERAL . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 91
+
+
+State 82
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN . NTDefPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 92
+
+    NTDefPlus  go to state 93
+    NTDef      go to state 94
+
+
+State 83
+
+   40 Term: TK_LPAREN Symbol TermStar TK_RPAREN .
+
+    $default  reduce using rule 40 (Term)
+
+
+State 84
+
+   43 TermStar: TermStar Term .
+
+    $default  reduce using rule 43 (TermStar)
+
+
+State 85
+
+   18 SortExpr: TK_LPAREN TK_BV IntConst TK_RPAREN .
+
+    $default  reduce using rule 18 (SortExpr)
+
+
+State 86
+
+   29 SymbolPlus: Symbol .
+
+    $default  reduce using rule 29 (SymbolPlus)
+
+
+State 87
+
+   27 ECList: TK_LPAREN SymbolPlus . TK_RPAREN
+   28 SymbolPlus: SymbolPlus . Symbol
+
+    TK_RPAREN  shift, and go to state 95
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 96
+
+
+State 88
+
+   21 SortExpr: TK_LPAREN TK_ENUM ECList TK_RPAREN .
+
+    $default  reduce using rule 21 (SortExpr)
+
+
+State 89
+
+   39 SymbolSortPair: TK_LPAREN Symbol . SortExpr TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 97
+
+
+State 90
+
+   35 FunDefCmd: TK_LPAREN TK_DEFINE_FUN Symbol ArgList SortExpr Term TK_RPAREN .
+
+    $default  reduce using rule 35 (FunDefCmd)
+
+
+State 91
+
+   34 SymbolPair: TK_LPAREN Symbol TK_QUOTED_LITERAL TK_RPAREN .
+
+    $default  reduce using rule 34 (SymbolPair)
+
+
+State 92
+
+   51 NTDef: TK_LPAREN . Symbol SortExpr TK_LPAREN GTermPlus TK_RPAREN TK_RPAREN
+
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol  go to state 98
+
+
+State 93
+
+   49 NTDefPlus: NTDefPlus . NTDef
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus . TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 92
+    TK_RPAREN  shift, and go to state 99
+
+    NTDef  go to state 100
+
+
+State 94
+
+   50 NTDefPlus: NTDef .
+
+    $default  reduce using rule 50 (NTDefPlus)
+
+
+State 95
+
+   27 ECList: TK_LPAREN SymbolPlus TK_RPAREN .
+
+    $default  reduce using rule 27 (ECList)
+
+
+State 96
+
+   28 SymbolPlus: SymbolPlus Symbol .
+
+    $default  reduce using rule 28 (SymbolPlus)
+
+
+State 97
+
+   39 SymbolSortPair: TK_LPAREN Symbol SortExpr . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 101
+
+
+State 98
+
+   51 NTDef: TK_LPAREN Symbol . SortExpr TK_LPAREN GTermPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 102
+
+
+State 99
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 103
+
+
+State 100
+
+   49 NTDefPlus: NTDefPlus NTDef .
+
+    $default  reduce using rule 49 (NTDefPlus)
+
+
+State 101
+
+   39 SymbolSortPair: TK_LPAREN Symbol SortExpr TK_RPAREN .
+
+    $default  reduce using rule 39 (SymbolSortPair)
+
+
+State 102
+
+   51 NTDef: TK_LPAREN Symbol SortExpr . TK_LPAREN GTermPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 104
+
+
+State 103
+
+   56 SynthFunCmd: TK_LPAREN TK_SYNTH_FUN Symbol ArgList SortExpr TK_LPAREN NTDefPlus TK_RPAREN TK_RPAREN .
+
+    $default  reduce using rule 56 (SynthFunCmd)
+
+
+State 104
+
+   51 NTDef: TK_LPAREN Symbol SortExpr TK_LPAREN . GTermPlus TK_RPAREN TK_RPAREN
+
+    TK_LPAREN        shift, and go to state 105
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 106
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Literal    go to state 107
+    GTermPlus  go to state 108
+    GTerm      go to state 109
+
+
+State 105
+
+   59 GTerm: TK_LPAREN . Symbol GTermStar TK_RPAREN
+   60      | TK_LPAREN . TK_CONSTANT SortExpr TK_RPAREN
+   61      | TK_LPAREN . TK_VARIABLE SortExpr TK_RPAREN
+
+    TK_CONSTANT  shift, and go to state 110
+    TK_VARIABLE  shift, and go to state 111
+    TK_SYMBOL    shift, and go to state 26
+
+    Symbol  go to state 112
+
+
+State 106
+
+   57 GTerm: Symbol .
+
+    $default  reduce using rule 57 (GTerm)
+
+
+State 107
+
+   58 GTerm: Literal .
+
+    $default  reduce using rule 58 (GTerm)
+
+
+State 108
+
+   51 NTDef: TK_LPAREN Symbol SortExpr TK_LPAREN GTermPlus . TK_RPAREN TK_RPAREN
+   52 GTermPlus: GTermPlus . GTerm
+
+    TK_LPAREN        shift, and go to state 105
+    TK_RPAREN        shift, and go to state 113
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 106
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Literal    go to state 107
+    GTerm      go to state 114
+
+
+State 109
+
+   53 GTermPlus: GTerm .
+
+    $default  reduce using rule 53 (GTermPlus)
+
+
+State 110
+
+   60 GTerm: TK_LPAREN TK_CONSTANT . SortExpr TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 115
+
+
+State 111
+
+   61 GTerm: TK_LPAREN TK_VARIABLE . SortExpr TK_RPAREN
+
+    TK_LPAREN  shift, and go to state 47
+    TK_INT     shift, and go to state 48
+    TK_BOOL    shift, and go to state 49
+    TK_SYMBOL  shift, and go to state 26
+
+    Symbol    go to state 50
+    SortExpr  go to state 116
+
+
+State 112
+
+   59 GTerm: TK_LPAREN Symbol . GTermStar TK_RPAREN
+
+    $default  reduce using rule 63 (GTermStar)
+
+    GTermStar  go to state 117
+
+
+State 113
+
+   51 NTDef: TK_LPAREN Symbol SortExpr TK_LPAREN GTermPlus TK_RPAREN . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 118
+
+
+State 114
+
+   52 GTermPlus: GTermPlus GTerm .
+
+    $default  reduce using rule 52 (GTermPlus)
+
+
+State 115
+
+   60 GTerm: TK_LPAREN TK_CONSTANT SortExpr . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 119
+
+
+State 116
+
+   61 GTerm: TK_LPAREN TK_VARIABLE SortExpr . TK_RPAREN
+
+    TK_RPAREN  shift, and go to state 120
+
+
+State 117
+
+   59 GTerm: TK_LPAREN Symbol GTermStar . TK_RPAREN
+   62 GTermStar: GTermStar . GTerm
+
+    TK_LPAREN        shift, and go to state 105
+    TK_RPAREN        shift, and go to state 121
+    TK_INT_LITERAL   shift, and go to state 36
+    TK_BOOL_LITERAL  shift, and go to state 37
+    TK_ENUM_LITERAL  shift, and go to state 38
+    TK_BV_LITERAL    shift, and go to state 39
+    TK_SYMBOL        shift, and go to state 26
+
+    Symbol     go to state 106
+    IntConst   go to state 41
+    BoolConst  go to state 42
+    BVConst    go to state 43
+    EnumConst  go to state 44
+    Literal    go to state 107
+    GTerm      go to state 122
+
+
+State 118
+
+   51 NTDef: TK_LPAREN Symbol SortExpr TK_LPAREN GTermPlus TK_RPAREN TK_RPAREN .
+
+    $default  reduce using rule 51 (NTDef)
+
+
+State 119
+
+   60 GTerm: TK_LPAREN TK_CONSTANT SortExpr TK_RPAREN .
+
+    $default  reduce using rule 60 (GTerm)
+
+
+State 120
+
+   61 GTerm: TK_LPAREN TK_VARIABLE SortExpr TK_RPAREN .
+
+    $default  reduce using rule 61 (GTerm)
+
+
+State 121
+
+   59 GTerm: TK_LPAREN Symbol GTermStar TK_RPAREN .
+
+    $default  reduce using rule 59 (GTerm)
+
+
+State 122
+
+   62 GTermStar: GTermStar GTerm .
+
+    $default  reduce using rule 62 (GTermStar)
