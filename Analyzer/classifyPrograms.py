@@ -29,6 +29,7 @@ class FeatureGenerator:
         self.layer2FeatureWeights = dict()
         #self.layer2FeatureWeights = [[0]*self.numberOfSolvers]*self.numberOfCategories
         self.populateLayer2InitialValues()
+        self.populateLayer2Biases()
         
     def populateLayer2InitialValues(self):
         folderIndex = 0
@@ -54,16 +55,54 @@ class FeatureGenerator:
                                 featureWeights[folderIndex] += minTimeToCompletion/entry.wallClockTime
                             self.layer2FeatureWeights[entry.solver] = featureWeights
             folderIndex += 1
-        for key in self.layer2FeatureWeights:
-            print(str(key)+" "+str(self.layer2FeatureWeights[key]))
 
-    def getLayer2Output(self, program):
+    def getLayer2z(self, program):
         features = self.getLayer1Output(program)
-        
-
+        labels = []
+        z = []
+        for key in self.layer2FeatureWeights:
+            labels.append(key)
+            z.append(sum([f*w for f, w in zip(features, self.layer2FeatureWeights[key])]))
+        # z represents the outputs of the neurons. labels represents the label of the neuron
+        return zip(z, labels)
+        # Each of these keys represents a single neuron
+            
+    def populateLayer2Biases(self):
+        folderIndex = 0
+        totalRuns = 0.0
+        correct = 0.0
+        avgCorrect = 0.0
+        correctPerCategory = [0.0]*self.numberOfCategories
+        totalPerCategory = [0.0]*self.numberOfCategories
+        for folder, subs, files in os.walk(self.trainingPath):
+            if folder == self.trainingPath:
+                continue
+            for fileName in files:
+                if fileName.endswith(".sl"):
+                    if(fileName not in self.benchmarksData):
+                        continue
+                    program = open(os.path.join(folder, fileName), 'rb')
+                    # First, get the min solver
+                    minTimeToCompletion = sys.maxint
+                    minSolver = None
+                    for entry in self.benchmarksData[fileName]:
+                        if(entry.result == "correct") and entry.wallClockTime < minTimeToCompletion:
+                            minTimeToCompletion = entry.wallClockTime
+                            minSolver = entry.solver
+                    if(minSolver == None):
+                        continue
+                    zVal, solver = sorted(self.getLayer2z(program), reverse=True)[0]
+                    if solver==minSolver:
+                        correct += 1
+                    totalRuns += 1
+                    #print(self.getLayer2z(program))
+        print("hits:")
+        print(correct/totalRuns)
+                    
+                    
     def getLayer1Output(self, program):
         z = self.layer1z(program)
-        return self._sigmoid(z)
+        return self._sigmoid(z, self.layer1Biases)
 
     # wordReferences is our initial feature weight
     def layer1z(self, program):
@@ -114,6 +153,7 @@ class FeatureGenerator:
         totalRuns = 0.0
         correct = 0.0
         avgCorrect = 0.0
+        avg = 0.0
         correctPerCategory = [0.0]*self.numberOfCategories
         totalPerCategory = [0.0]*self.numberOfCategories
         for folder, subs, files in os.walk(self.trainingPath):
@@ -126,6 +166,7 @@ class FeatureGenerator:
                     isCorrect = (zValues.index(max(zValues)) == folderIndex)
                     correct += isCorrect
                     totalPerCategory[folderIndex] += 1
+                    avg += max(zValues)
                     if isCorrect:
                         avgCorrect += max(zValues)
                         correctPerCategory[folderIndex] += 1
@@ -139,7 +180,7 @@ class FeatureGenerator:
 #        print("Correctness per category")
 #        print([c/t for c, t in zip(correctPerCategory, totalPerCategory)])
         # This gives us our bias:
-        return avgCorrect/correct
+        return avg/totalRuns
          
     # Given a file handle, this pulls out relevant data points
     # It skips commented lines (starting with ;)
@@ -187,7 +228,9 @@ class FeatureGenerator:
         return dataPoint/len(data)
 
     def _sigmoid(self, z, biases):
-        return [1/(1+math.exp(bias - zval)) for bias, zval in zip(biases, z)]
+        #print("Bias"+" "+str([bias-zval for bias,zval in zip(biases, z)]))
+        print(str([bias-zval<0 for bias,zval in zip(biases, z)]))
+        return [1/(1+math.exp((bias - zval))*100) for bias, zval in zip(biases, z)]
     
 
 
